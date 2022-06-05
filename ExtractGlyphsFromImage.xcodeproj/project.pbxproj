@@ -7,15 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		49D3635A284CFB6F0065B04A /* VisionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D36359284CFB6F0065B04A /* VisionAPI.swift */; };
+		49D3635B284CFB6F0065B04A /* VisionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D36359284CFB6F0065B04A /* VisionAPI.swift */; };
+		49D3635D284D06330065B04A /* RectOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D3635C284D06330065B04A /* RectOverlay.swift */; };
+		49D3635E284D06330065B04A /* RectOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D3635C284D06330065B04A /* RectOverlay.swift */; };
 		49E23AEB284B37F3004C8BA5 /* ExtractGlyphsFromImageApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E23ADB284B37F2004C8BA5 /* ExtractGlyphsFromImageApp.swift */; };
 		49E23AEC284B37F3004C8BA5 /* ExtractGlyphsFromImageApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E23ADB284B37F2004C8BA5 /* ExtractGlyphsFromImageApp.swift */; };
 		49E23AED284B37F3004C8BA5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E23ADC284B37F2004C8BA5 /* ContentView.swift */; };
 		49E23AEE284B37F3004C8BA5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E23ADC284B37F2004C8BA5 /* ContentView.swift */; };
 		49E23AEF284B37F3004C8BA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49E23ADD284B37F3004C8BA5 /* Assets.xcassets */; };
 		49E23AF0284B37F3004C8BA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49E23ADD284B37F3004C8BA5 /* Assets.xcassets */; };
+		49E23AFB284B3D35004C8BA5 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 49E23AFA284B3D35004C8BA5 /* Algorithms */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		49D36359284CFB6F0065B04A /* VisionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionAPI.swift; sourceTree = "<group>"; };
+		49D3635C284D06330065B04A /* RectOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectOverlay.swift; sourceTree = "<group>"; };
 		49E23ADB284B37F2004C8BA5 /* ExtractGlyphsFromImageApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractGlyphsFromImageApp.swift; sourceTree = "<group>"; };
 		49E23ADC284B37F2004C8BA5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		49E23ADD284B37F3004C8BA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -36,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49E23AFB284B3D35004C8BA5 /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,6 +64,8 @@
 			children = (
 				49E23ADB284B37F2004C8BA5 /* ExtractGlyphsFromImageApp.swift */,
 				49E23ADC284B37F2004C8BA5 /* ContentView.swift */,
+				49D3635C284D06330065B04A /* RectOverlay.swift */,
+				49D36359284CFB6F0065B04A /* VisionAPI.swift */,
 				49E23ADD284B37F3004C8BA5 /* Assets.xcassets */,
 			);
 			path = Shared;
@@ -111,6 +121,9 @@
 			dependencies = (
 			);
 			name = "ExtractGlyphsFromImage (macOS)";
+			packageProductDependencies = (
+				49E23AFA284B3D35004C8BA5 /* Algorithms */,
+			);
 			productName = "ExtractGlyphsFromImage (macOS)";
 			productReference = 49E23AE8284B37F3004C8BA5 /* ExtractGlyphsFromImage.app */;
 			productType = "com.apple.product-type.application";
@@ -142,6 +155,9 @@
 				Base,
 			);
 			mainGroup = 49E23AD5284B37F2004C8BA5;
+			packageReferences = (
+				49E23AF9284B3D35004C8BA5 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+			);
 			productRefGroup = 49E23AE3284B37F3004C8BA5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -176,8 +192,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49D3635D284D06330065B04A /* RectOverlay.swift in Sources */,
 				49E23AED284B37F3004C8BA5 /* ContentView.swift in Sources */,
 				49E23AEB284B37F3004C8BA5 /* ExtractGlyphsFromImageApp.swift in Sources */,
+				49D3635A284CFB6F0065B04A /* VisionAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,8 +203,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49D3635E284D06330065B04A /* RectOverlay.swift in Sources */,
 				49E23AEE284B37F3004C8BA5 /* ContentView.swift in Sources */,
 				49E23AEC284B37F3004C8BA5 /* ExtractGlyphsFromImageApp.swift in Sources */,
+				49D3635B284CFB6F0065B04A /* VisionAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -450,6 +470,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		49E23AF9284B3D35004C8BA5 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		49E23AFA284B3D35004C8BA5 /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 49E23AF9284B3D35004C8BA5 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 49E23AD6284B37F2004C8BA5 /* Project object */;
 }
