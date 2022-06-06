@@ -89,13 +89,13 @@ struct DisplayOptions: OptionSet {
 
 struct ContentView: View {
     
-    @State var img: NSImage? = nil
+    @State var img: CGImage? = nil
 
     @StateObject var vision = VisionAPI()
     
     var body: some View {
         DropableImageFile(img: $img)
-            .overlay{
+            {
                 Group {
                     if let texts = vision.texts, let rects = vision.rects, let recogTexts = vision.recogTexts {
                         RectOverlay(display: .all, texts: texts, rects: rects, recogText: recogTexts)
@@ -104,36 +104,62 @@ struct ContentView: View {
             }
             .onChange(of: img) { newValue in
                 Task {
-                    guard let image = newValue,
-                            let cg = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+                    guard let image = newValue
                     else {
                         vision.texts = nil
                         vision.rects = nil
                         return
                     }
-                    await vision.doVisionRequest(image: cg)
+                    await vision.doVisionRequest(image: image)
                 }
             }
             .padding()
     }
 }
 
-struct DropableImageFile: View {
+import ImageIO
+extension CGImage {
+    
+    static func from(data: Data) -> CGImage? {
+        guard let src = CGImageSourceCreateWithData(data as CFData, nil)
+        else { return nil }
+        return CGImageSourceCreateImageAtIndex(src, CGImageSourceGetPrimaryImageIndex(src), nil)
+    }
+
+    static func from(url: URL) -> CGImage? {
+        guard let src = CGImageSourceCreateWithURL(url as CFURL, nil)
+        else { return nil }
+        return CGImageSourceCreateImageAtIndex(src, CGImageSourceGetPrimaryImageIndex(src), nil)
+    }
+
+    
+}
+
+struct DropableImageFile<Overlay: View>: View {
     @State var flag = false
-    @Binding var img: NSImage?
+    @Binding var img: CGImage?
+    
+    @ViewBuilder var overlay: Overlay
     
     var body: some View {
         Rectangle()
             .fill(self.flag ? Color.green : Color.gray)
             .overlay(Text("Drop Here"))
-            .overlay(Image(nsImage: img ?? NSImage()).resizable())
+            .overlay(alignment: .center){
+                if let img = img {
+                    Image(decorative: img, scale: 1)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .overlay(overlay)
+                }
+            }
             .onDrop(of: [UTType.fileURL.identifier, UTType.png.identifier, UTType.jpeg.identifier], isTargeted: $flag, perform: { items in
                 
                 if let item = items.first {
                     if item.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                         item.loadItem(forTypeIdentifier: UTType.image.identifier) { (data, error) in
                             if let data = data as? Data {
-                                img = NSImage(data: data)
+                                img = CGImage.from(data: data)
                             }
                         }
                         return true
@@ -141,7 +167,7 @@ struct DropableImageFile: View {
                         item.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { (urlData, error) in
                             if let urlData = urlData as? Data {
                                 let u = NSURL.init(absoluteURLWithDataRepresentation: urlData, relativeTo: nil)
-                                img = NSImage(byReferencing: u as URL)
+                                img = CGImage.from(url: u as URL)
                             }
                         }
                         return true
