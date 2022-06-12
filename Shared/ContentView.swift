@@ -87,17 +87,51 @@ struct DisplayOptions: OptionSet {
     static let all: Self = [.rects, .characters, .recognizedText]
 }
 
+extension CGRect {
+    var square: CGRect {
+        let size = max(width, height)
+        return CGRect(
+            origin: CGPoint(x: midX - size / 2, y: midY - size / 2),
+            size: CGSize(width: size, height: size)
+        )
+    }
+}
+
 struct ContentView: View {
     
     @State var img: CGImage? = nil
 
     @StateObject var vision = VisionAPI()
     
+    let padding: CGFloat = 2
+    
+    func charRects(image: CGImage) -> [CGImage] {
+        if let texts = vision.texts {
+            return texts.flatMap { obs -> [CGImage] in
+                let boxes = obs.characterBoxes ?? []
+                // Char box is always axis-aligned
+                let (w,h) = (CGFloat(image.width), CGFloat(image.height))
+                let t = CGAffineTransform(translationX: 0, y: h).scaledBy(x: w, y: -h)
+                
+                return boxes
+                    .map{$0.boundingBox.applying(t).insetBy(dx: -padding, dy: -padding).square }
+                    .compactMap{ image.cropping(to: $0) }
+            }
+        } else {
+            return []
+        }
+    }
+    
     var body: some View {
+        if let img {
+            AllGlyphsGrid(images: charRects(image: img))
+        }
         DropableImageFile(img: $img)
             {
                 Group {
-                    if let texts = vision.texts, let rects = vision.rects, let recogTexts = vision.recogTexts {
+                    if let texts = vision.texts,
+                       let rects = vision.rects,
+                       let recogTexts = vision.recogTexts {
                         RectOverlay(display: .all, texts: texts, rects: rects, recogText: recogTexts)
                     }
                 }
@@ -135,11 +169,52 @@ extension CGImage {
     
 }
 
+struct AllGlyphsGrid: View {
+    
+    let images: [CGImage]
+    
+    var body: some View {
+        LazyVGrid(columns: .init(repeating: .init(.adaptive(minimum: 10)), count: 10)) {
+            // We don't need them to animate, index is identifior
+            ForEach(images.indexed(), id: \.index) { (index, image) in
+                Image(decorative: image, scale: 1)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            }
+        }
+    }
+}
+
 struct DropableImageFile<Overlay: View>: View {
     @State var flag = false
     @Binding var img: CGImage?
     
     @ViewBuilder var overlay: Overlay
+    
+    var supportedTypes: [UTType] {
+        [UTType.fileURL, UTType.png, UTType.jpeg]
+    }
+    
+    @discardableResult
+    func acceptImage(fromProvider item: NSItemProvider) -> Bool {
+        if item.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+            item.loadItem(forTypeIdentifier: UTType.image.identifier) { (data, error) in
+                if let data = data as? Data {
+                    img = CGImage.from(data: data)
+                }
+            }
+            return true
+        } else if item.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+            item.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { (urlData, error) in
+                if let urlData = urlData as? Data {
+                    let u = NSURL.init(absoluteURLWithDataRepresentation: urlData, relativeTo: nil)
+                    img = CGImage.from(url: u as URL)
+                }
+            }
+            return true
+        }
+        return false
+    }
     
     var body: some View {
         Rectangle()
@@ -153,27 +228,15 @@ struct DropableImageFile<Overlay: View>: View {
                         .overlay(overlay)
                 }
             }
-            .onDrop(of: [UTType.fileURL.identifier, UTType.png.identifier, UTType.jpeg.identifier], isTargeted: $flag, perform: { items in
-                
-                if let item = items.first {
-                    if item.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-                        item.loadItem(forTypeIdentifier: UTType.image.identifier) { (data, error) in
-                            if let data = data as? Data {
-                                img = CGImage.from(data: data)
-                            }
-                        }
-                        return true
-                    } else if item.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
-                        item.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { (urlData, error) in
-                            if let urlData = urlData as? Data {
-                                let u = NSURL.init(absoluteURLWithDataRepresentation: urlData, relativeTo: nil)
-                                img = CGImage.from(url: u as URL)
-                            }
-                        }
-                        return true
-                    }
+            .onPasteCommand(of: supportedTypes) { providers in
+                for provider in providers {
+                    acceptImage(fromProvider: provider)
                 }
-                    
+            }
+            .onDrop(of: supportedTypes.map(\.identifier), isTargeted: $flag, perform: { items in
+                if let item = items.first {
+                    return acceptImage(fromProvider: item)
+                }
                 return false
             })
     }

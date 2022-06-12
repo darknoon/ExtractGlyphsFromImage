@@ -44,6 +44,7 @@ struct RectOverlay: View {
                         if let candidate = text.topCandidates(1).first {
                             Text(candidate.string)
                                 .background(Color.white)
+                                .foregroundColor(Color.black)
                                 .rotationEffect(Angle(radians: tbox.rotation))
                                 .position(x: tbox.center.x, y: tbox.center.y)
                         }
